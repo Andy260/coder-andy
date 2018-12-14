@@ -26,12 +26,12 @@ namespace CoderAndy
             a_services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded = context => true;
-                options.MinimumSameSitePolicy = SameSiteMode.None;
+                options.CheckConsentNeeded      = context => true;
+                options.MinimumSameSitePolicy   = SameSiteMode.None;
             });
 
-            a_services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
+            a_services.AddDbContext<ApplicationDbContext>(a_options =>
+                a_options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
             a_services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
