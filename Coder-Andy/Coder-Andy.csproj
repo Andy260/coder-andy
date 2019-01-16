@@ -1,44 +1,21 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
-    <UserSecretsId>aspnet-Coder_Andy-EE1D2EB4-5082-48DB-A55D-70AC9642EF97</UserSecretsId>
-    <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <RootNamespace>CoderAndy</RootNamespace>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <UserSecretsId>aspnet-Coder_Andy-B4A85A4F-A5E9-4A9A-B689-7385F4EBB118</UserSecretsId>
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
-    <Company>Andrew Barbour</Company>
-    <Authors>Andrew Barbour</Authors>
+    <RootNamespace>CoderAndy</RootNamespace>
     <Version>0.0.0</Version>
-    <Copyright>Copyright © 2018 Andrew Barbour</Copyright>
-    <PackageProjectUrl>www.coder-andy.com</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Andy260/coder-andy</RepositoryUrl>
-    <RepositoryType>Git</RepositoryType>
-    <PackageLicenseUrl>https://github.com/Andy260/coder-andy/blob/master/LICENSE</PackageLicenseUrl>
-    <Description>Portfolio website application of Andrew Barbour.</Description>
+    <Authors>Andrew Barbour</Authors>
+    <Company>Andrew Barbour</Company>
+    <Copyright></Copyright>
   </PropertyGroup>
-
 
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.2.0" PrivateAssets="All" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.2105168" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.7" PrivateAssets="All" />
   </ItemGroup>
-
-
-  <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
-    <TypeScriptTarget>ES5</TypeScriptTarget>
-    <TypeScriptJSXEmit>None</TypeScriptJSXEmit>
-    <TypeScriptModuleKind />
-    <TypeScriptCompileOnSaveEnabled>True</TypeScriptCompileOnSaveEnabled>
-    <TypeScriptNoImplicitAny>False</TypeScriptNoImplicitAny>
-    <TypeScriptRemoveComments>False</TypeScriptRemoveComments>
-    <TypeScriptOutFile />
-    <TypeScriptOutDir />
-    <TypeScriptGeneratesDeclarations>False</TypeScriptGeneratesDeclarations>
-    <TypeScriptNoEmitOnError>True</TypeScriptNoEmitOnError>
-    <TypeScriptSourceMap>True</TypeScriptSourceMap>
-    <TypeScriptMapRoot />
-    <TypeScriptSourceRoot />
-  </PropertyGroup>
 
 </Project>

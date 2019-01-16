@@ -1,8 +1,12 @@
-﻿using Microsoft.AspNetCore.Builder;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using CoderAndy.Data;
@@ -13,55 +17,53 @@ namespace CoderAndy
 {
     public class Startup
     {
-        public Startup(IConfiguration a_configuration)
+        public Startup(IConfiguration configuration)
         {
-            Configuration = a_configuration;
+            Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
-        public void ConfigureServices(IServiceCollection a_services)
+        public void ConfigureServices(IServiceCollection services)
         {
-            a_services.Configure<CookiePolicyOptions>(options =>
+            services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
-                options.CheckConsentNeeded      = context => true;
-                options.MinimumSameSitePolicy   = SameSiteMode.None;
+                options.CheckConsentNeeded = context => true;
+                options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
-            a_services.AddDbContext<ApplicationDbContext>(a_options =>
-                a_options.UseSqlServer(
+            services.AddDbContext<ApplicationDbContext>(options =>
+                options.UseSqlServer(
                     Configuration.GetConnectionString("DefaultConnection")));
-            a_services.AddDefaultIdentity<IdentityUser>()
-                .AddDefaultUI(UIFramework.Bootstrap4)
+            services.AddDefaultIdentity<IdentityUser>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
-            a_services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
+            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder a_app, IHostingEnvironment a_env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            if (a_env.IsDevelopment())
+            if (env.IsDevelopment())
             {
-                a_app.UseDeveloperExceptionPage();
-                a_app.UseDatabaseErrorPage();
+                app.UseDeveloperExceptionPage();
+                app.UseDatabaseErrorPage();
             }
             else
             {
-                a_app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                a_app.UseHsts();
+                app.UseExceptionHandler("/Home/Error");
+                app.UseHsts();
             }
 
-            a_app.UseHttpsRedirection();
-            a_app.UseStaticFiles();
-            a_app.UseCookiePolicy();
+            app.UseHttpsRedirection();
+            app.UseStaticFiles();
+            app.UseCookiePolicy();
 
-            a_app.UseAuthentication();
+            app.UseAuthentication();
 
-            a_app.UseMvc(routes =>
+            app.UseMvc(routes =>
             {
                 routes.MapRoute(
                     name: "default",

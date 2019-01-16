@@ -1,3 +1,5 @@
+using System;
+
 namespace CoderAndy.Models
 {
     public class ErrorViewModel

@@ -6,9 +6,9 @@ namespace CoderAndy.Data.Migrations
 {
     public partial class CreateIdentitySchema : Migration
     {
-        protected override void Up(MigrationBuilder a_migrationBuilder)
+        protected override void Up(MigrationBuilder migrationBuilder)
         {
-            a_migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
                 {
@@ -22,7 +22,7 @@ namespace CoderAndy.Data.Migrations
                     table.PrimaryKey("PK_AspNetRoles", x => x.Id);
                 });
 
-            a_migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable(
                 name: "AspNetUsers",
                 columns: table => new
                 {
@@ -47,7 +47,7 @@ namespace CoderAndy.Data.Migrations
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
                 });
 
-            a_migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -68,7 +68,7 @@ namespace CoderAndy.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            a_migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable(
                 name: "AspNetUserClaims",
                 columns: table => new
                 {
@@ -89,7 +89,7 @@ namespace CoderAndy.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            a_migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable(
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
@@ -109,7 +109,7 @@ namespace CoderAndy.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            a_migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable(
                 name: "AspNetUserRoles",
                 columns: table => new
                 {
@@ -133,7 +133,7 @@ namespace CoderAndy.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            a_migrationBuilder.CreateTable(
+            migrationBuilder.CreateTable(
                 name: "AspNetUserTokens",
                 columns: table => new
                 {
@@ -153,39 +153,39 @@ namespace CoderAndy.Data.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
-            a_migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetRoleClaims_RoleId",
                 table: "AspNetRoleClaims",
                 column: "RoleId");
 
-            a_migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex(
                 name: "RoleNameIndex",
                 table: "AspNetRoles",
                 column: "NormalizedName",
                 unique: true,
                 filter: "[NormalizedName] IS NOT NULL");
 
-            a_migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserClaims_UserId",
                 table: "AspNetUserClaims",
                 column: "UserId");
 
-            a_migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserLogins_UserId",
                 table: "AspNetUserLogins",
                 column: "UserId");
 
-            a_migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUserRoles_RoleId",
                 table: "AspNetUserRoles",
                 column: "RoleId");
 
-            a_migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex(
                 name: "EmailIndex",
                 table: "AspNetUsers",
                 column: "NormalizedEmail");
 
-            a_migrationBuilder.CreateIndex(
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -193,27 +193,27 @@ namespace CoderAndy.Data.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
         }
 
-        protected override void Down(MigrationBuilder a_migrationBuilder)
+        protected override void Down(MigrationBuilder migrationBuilder)
         {
-            a_migrationBuilder.DropTable(
+            migrationBuilder.DropTable(
                 name: "AspNetRoleClaims");
 
-            a_migrationBuilder.DropTable(
+            migrationBuilder.DropTable(
                 name: "AspNetUserClaims");
 
-            a_migrationBuilder.DropTable(
+            migrationBuilder.DropTable(
                 name: "AspNetUserLogins");
 
-            a_migrationBuilder.DropTable(
+            migrationBuilder.DropTable(
                 name: "AspNetUserRoles");
 
-            a_migrationBuilder.DropTable(
+            migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
 
-            a_migrationBuilder.DropTable(
+            migrationBuilder.DropTable(
                 name: "AspNetRoles");
 
-            a_migrationBuilder.DropTable(
+            migrationBuilder.DropTable(
                 name: "AspNetUsers");
         }
     }
