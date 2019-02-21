@@ -4,15 +4,27 @@ using CoderAndy.Models;
 
 namespace CoderAndy.Controllers
 {
-    public class HomeController : Controller
+    public class PortfolioController : Controller
     {
         public IActionResult Index()
         {
             return View();
         }
 
-        [Route("Privacy")]
-        public IActionResult Privacy()
+        [Route("Demos")]
+        public IActionResult Demos()
+        {
+            return View();
+        }
+
+        [Route("Contact")]
+        public IActionResult Contact()
+        {
+            return View();
+        }
+
+        [Route("About")]
+        public IActionResult About()
         {
             return View();
         }
