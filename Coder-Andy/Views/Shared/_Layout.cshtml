@@ -1,21 +1,60 @@
-﻿<!DOCTYPE html>
+﻿@{ 
+    string title = ViewData["Title"] as string;
+
+    if (string.IsNullOrEmpty(title))
+    {
+        title = "Coder-Andy";
+    }
+    else
+    {
+        title = string.Format("{0} - Coder-Andy", title);
+    }
+}
+
+<!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Coder-Andy</title>
+    <title>@title</title>
 
     <environment include="Development">
+        @* Bootstrap *@
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
+
+        @* Font Awesome *@
+        <link rel="stylesheet" href="~/lib/fontawesome-free/css/solid.css" />
+        <link rel="stylesheet" href="~/lib/fontawesome-free/css/brands.css" />
+        <link rel="stylesheet" href="~/lib/fontawesome-free/css/fontawesome.css" />
+
+        @* Site *@
+        <link rel="stylesheet" href="~/css/site.css" />
     </environment>
     <environment exclude="Development">
+        @* Bootstrap *@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/css/bootstrap.min.css"
               asp-fallback-href="~/lib/bootstrap/dist/css/bootstrap.min.css"
               asp-fallback-test-class="sr-only" asp-fallback-test-property="position" asp-fallback-test-value="absolute"
               crossorigin="anonymous"
-              integrity="sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE="/>
+              integrity="sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE=" />
+
+        @* Font Awesome *@
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/solid.css"
+              asp-fallback-href="~/lib/fontawesome-free/css/solid.css"
+              integrity="sha384-r/k8YTFqmlOaqRkZuSiE9trsrDXkh07mRaoGBMoDcmA58OHILZPsk29i2BsFng1B"
+              crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/brands.css"
+              asp-fallback-href="~/lib/fontawesome-free/css/brands.css"
+              integrity="sha384-BKw0P+CQz9xmby+uplDwp82Py8x1xtYPK3ORn/ZSoe6Dk3ETP59WCDnX+fI1XCKK"
+              crossorigin="anonymous">
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/fontawesome.css"
+              asp-fallback-href="~/lib/fontawesome-free/css/fontawesome.css"
+              integrity="sha384-4aon80D8rXCGx9ayDt85LbyUHeMWd3UiBaWliBlJ53yzm9hqN21A+o1pqoyK04h+"
+              crossorigin="anonymous">
+
+        @* Site *@
+        <link rel="stylesheet" href="~/css/site.min.css" />
     </environment>
-    <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
     <header>
@@ -29,30 +68,38 @@
     </div>
 
     <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; @DateTime.Now.Year - Coder-Andy (Andrew Barbour) - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
+        <partial name="_Footer" />
     </footer>
 
     <environment include="Development">
+        @* jQuery scripts *@
         <script src="~/lib/jquery/dist/jquery.js"></script>
+        @* Bootstrap scripts *@
         <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.js"></script>
+
+        @* Site *@
+        <script src="~/js/site.js" asp-append-version="true"></script>
     </environment>
     <environment exclude="Development">
+        @* jQuery scripts *@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"
                 asp-fallback-src="~/lib/jquery/dist/jquery.min.js"
                 asp-fallback-test="window.jQuery"
                 crossorigin="anonymous"
                 integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=">
         </script>
+
+        @* Bootstrap scripts *@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.1.3/js/bootstrap.bundle.min.js"
                 asp-fallback-src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"
                 asp-fallback-test="window.jQuery && window.jQuery.fn && window.jQuery.fn.modal"
                 crossorigin="anonymous"
                 integrity="sha256-E/V4cWE4qvAeO5MOhjtGtqDzPndRO1LBk8lJ/PR7CA4=">
         </script>
+
+        @* Site *@
+        <script src="~/js/site.min.js" asp-append-version="true"></script>
     </environment>
-    <script src="~/js/site.js" asp-append-version="true"></script>
 
     @RenderSection("Scripts", required: false)
 </body>

@@ -1,3 +1,14 @@
+# Misc Visual Studio files
 .vs/
+
+# Build files
 Coder-Andy/bin/
 Coder-Andy/obj/
+
+# Package maneger files
+Coder-Andy/node_modules/
+Coder-Andy/wwwroot/lib/
+
+# Bundled/minifed client files
+Coder-Andy/wwwroot/css/site.min.css
+Coder-Andy/wwwroot/js/site.min.js
