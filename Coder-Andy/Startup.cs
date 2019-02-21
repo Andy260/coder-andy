@@ -30,9 +30,12 @@ namespace CoderAndy
                 options.MinimumSameSitePolicy = SameSiteMode.None;
             });
 
+            // Set-up Database connection
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                options.UseMySQL(
+                    Configuration.GetConnectionString("DefaultMYSQLConnection")));
+
+            // Set-up Identity
             services.AddDefaultIdentity<IdentityUser>()
                 .AddDefaultUI(UIFramework.Bootstrap4)
                 .AddEntityFrameworkStores<ApplicationDbContext>();
@@ -50,14 +53,13 @@ namespace CoderAndy
             }
             else
             {
-                app.UseExceptionHandler("/Home/Error");
+                app.UseExceptionHandler("/Portfolio/Error");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseCookiePolicy();
 
             app.UseAuthentication();
 
@@ -65,7 +67,7 @@ namespace CoderAndy
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Home}/{action=Index}/{id?}");
+                    template: "{controller=Portfolio}/{action=Index}/{id?}");
             });
         }
     }

@@ -12,3 +12,5 @@ Coder-Andy/wwwroot/lib/
 # Bundled/minifed client files
 Coder-Andy/wwwroot/css/site.min.css
 Coder-Andy/wwwroot/js/site.min.js
+Coder-Andy Tests/bin/
+Coder-Andy Tests/obj/
