@@ -1,0 +1,18 @@
+﻿@model  CoderAndy.Models.Blog.Post
+
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@* Post header *@
+<div class="container">
+
+</div>
+
+@* Post Content *@
+<div class="container">
+    <h1 class="display-4">@Model.Title</h1>
+
+    @Model.Content
+</div>
