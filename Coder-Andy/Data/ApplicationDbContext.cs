@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using CoderAndy.Models.Blog;
+using CoderAndy.Models.Media;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -6,14 +8,19 @@ namespace CoderAndy.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<Category> Categories { get; set; }
+
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> a_options)
+            : base(a_options)
         {
             
         }
 
         protected override void OnModelCreating(ModelBuilder a_builder)
         {
+            base.OnModelCreating(a_builder);
+
             // Shorten key length for Identity
             a_builder.Entity<IdentityUser>(entity => entity.Property(m => m.Id).HasMaxLength(127));
             a_builder.Entity<IdentityRole>(entity => entity.Property(m => m.Id).HasMaxLength(127));
