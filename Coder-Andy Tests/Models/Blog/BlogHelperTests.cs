@@ -6,11 +6,13 @@ using NUnit.Framework;
 namespace CoderAndy.Models.Blog.Tests
 {
     [TestFixture]
+    [Parallelizable]
+    [TestOf(typeof(BlogHelper))]
     public class BlogHelperTests
     {
         #region Test Case Sources
 
-        private class NameToLinkData
+        public static class NameToLinkData
         {
             private static readonly char[] _validCharacters =
             {
@@ -72,6 +74,16 @@ namespace CoderAndy.Models.Blog.Tests
             string name = string.Format("Test {0} Name", a_invalidCharacter);
 
             Assert.AreEqual("test-name", BlogHelper.NameToLinkName(name));
+        }
+
+        [Test]
+        [Category("Function Test")]
+        [Description("Tests NameToLinkName() function with input which is already a valid link name")]
+        public void NameToLinkName_LinkNameInput()
+        {
+            string linkName = "test-name";
+
+            Assert.AreEqual(linkName, BlogHelper.NameToLinkName(linkName));
         }
 
         #endregion

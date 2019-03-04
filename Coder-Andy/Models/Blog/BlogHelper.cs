@@ -16,6 +16,9 @@ namespace CoderAndy.Models.Blog
         {
             a_name = a_name.ToLower();
 
+            // Ensure similar behaviour with input which is already a safe URL
+            a_name = a_name.Replace("-", " ");
+
             // Remove unsafe URL characters
             a_name = new Regex("[^a-zA-Z0-9 ]").Replace(a_name, "");
 
