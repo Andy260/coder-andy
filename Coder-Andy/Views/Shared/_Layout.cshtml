@@ -1,6 +1,6 @@
 ﻿@{ 
+    // Set page title
     string title = ViewData["Title"] as string;
-
     if (string.IsNullOrEmpty(title))
     {
         title = "Coder-Andy";
@@ -16,19 +16,20 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
     <title>@title</title>
 
     <environment include="Development">
         @* Bootstrap *@
         <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.css" />
 
-        @* Font Awesome *@
-        <link rel="stylesheet" href="~/lib/fontawesome-free/css/solid.css" />
-        <link rel="stylesheet" href="~/lib/fontawesome-free/css/brands.css" />
-        <link rel="stylesheet" href="~/lib/fontawesome-free/css/fontawesome.css" />
-
         @* Site *@
         <link rel="stylesheet" href="~/css/site.css" />
+
+        @* Font Awesome *@
+        <script src="~/lib/fontawesome-free/js/solid.js"></script>
+        <script src="~/lib/fontawesome-free/js/brands.js"></script>
+        <script src="~/lib/fontawesome-free/js/fontawesome.js"></script>
     </environment>
     <environment exclude="Development">
         @* Bootstrap *@
@@ -39,18 +40,18 @@
               integrity="sha256-eSi1q2PG6J7g7ib17yAaWMcrr5GrtohYChqibrV7PBE=" />
 
         @* Font Awesome *@
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/solid.css"
-              asp-fallback-href="~/lib/fontawesome-free/css/solid.css"
-              integrity="sha384-r/k8YTFqmlOaqRkZuSiE9trsrDXkh07mRaoGBMoDcmA58OHILZPsk29i2BsFng1B"
-              crossorigin="anonymous">
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/brands.css"
-              asp-fallback-href="~/lib/fontawesome-free/css/brands.css"
-              integrity="sha384-BKw0P+CQz9xmby+uplDwp82Py8x1xtYPK3ORn/ZSoe6Dk3ETP59WCDnX+fI1XCKK"
-              crossorigin="anonymous">
-        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/fontawesome.css"
-              asp-fallback-href="~/lib/fontawesome-free/css/fontawesome.css"
-              integrity="sha384-4aon80D8rXCGx9ayDt85LbyUHeMWd3UiBaWliBlJ53yzm9hqN21A+o1pqoyK04h+"
-              crossorigin="anonymous">
+        <script defer src="https://use.fontawesome.com/releases/v5.7.2/js/solid.js"
+                asp-fallback-src="~/lib/fontawesome-free/js/solid.js"
+                integrity="sha384-6FXzJ8R8IC4v/SKPI8oOcRrUkJU8uvFK6YJ4eDY11bJQz4lRw5/wGthflEOX8hjL"
+                crossorigin="anonymous"></script>
+        <script defer src="https://use.fontawesome.com/releases/v5.7.2/js/brands.js"
+                asp-fallback-src="~/lib/fontawesome-free/js/brands.js"
+                integrity="sha384-zJ8/qgGmKwL+kr/xmGA6s1oXK63ah5/1rHuILmZ44sO2Bbq1V3p3eRTkuGcivyhD"
+                crossorigin="anonymous"></script>
+        <script defer src="https://use.fontawesome.com/releases/v5.7.2/js/fontawesome.js"
+                asp-fallback-src="~/lib/fontawesome-free/js/fontawesome.js"
+                integrity="sha384-xl26xwG2NVtJDw2/96Lmg09++ZjrXPc89j0j7JHjLOdSwHDHPHiucUjfllW0Ywrq"
+                crossorigin="anonymous"></script>
 
         @* Site *@
         <link rel="stylesheet" href="~/css/site.min.css" />
