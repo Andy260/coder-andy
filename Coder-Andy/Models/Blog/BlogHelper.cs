@@ -14,6 +14,11 @@ namespace CoderAndy.Models.Blog
         /// <returns>URL Safe name</returns>
         public static string NameToLinkName(string a_name)
         {
+            if (a_name == null)
+            {
+                return "_";
+            }
+
             a_name = a_name.ToLower();
 
             // Ensure similar behaviour with input which is already a safe URL

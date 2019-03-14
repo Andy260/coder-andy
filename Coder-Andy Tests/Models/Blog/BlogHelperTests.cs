@@ -86,6 +86,14 @@ namespace CoderAndy.Models.Blog.Tests
             Assert.AreEqual(linkName, BlogHelper.NameToLinkName(linkName));
         }
 
+        [Test]
+        [Category("Function Test")]
+        [Description("Tests NameToLinkName() function with a NULL string")]
+        public void NameToLinkName_Null()
+        {
+            Assert.AreEqual("_", BlogHelper.NameToLinkName(null));
+        }
+
         #endregion
     }
 }
