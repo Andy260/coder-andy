@@ -177,6 +177,8 @@ namespace CoderAndy.Models.Blog
             // Equals handles the case of null on the right side
             // and object comparison
             return lhs.Equals(rhs);
+
+#pragma warning restore IDE0041 // Re-enable 'is null' check
         }
 
         /// <summary>
