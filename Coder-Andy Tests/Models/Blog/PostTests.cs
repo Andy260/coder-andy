@@ -2,8 +2,6 @@
 using System.Collections;
 using CoderAndy.Data;
 using CoderAndy.Tests.TestFixtureBases;
-using Microsoft.Data.Sqlite;
-using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace CoderAndy.Models.Blog.Tests
@@ -19,77 +17,22 @@ namespace CoderAndy.Models.Blog.Tests
         {
             get
             {
-                // Ensure we have a database context
-                if (DbOptions == null)
-                {
-                    SqliteConnection dbConnection;
-                    DbContextOptions<ApplicationDbContext> dbOptions;
-                    CreateDatabase(out dbConnection, out dbOptions);
-
-                    DbConnection    = dbConnection;
-                    DbOptions       = dbOptions;
-                }
-
-                using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
-                {
-                    Post firstPost  = new Post(context, "A Post", "<p>Post content.</p>", 55);
-                    Post secondPost = new Post(context, "A Post", "<p>Post content.</p>", 55);
-
-                    yield return new TestCaseData(firstPost, secondPost)
-                        .SetArgDisplayNames("x", "x")
-                        .Returns(true);
-
-                    yield return new TestCaseData(
-                    new Post(
-                        context: context,
-                        title: "Test Post",
-                        link: "test-post",
-                        publishTime: DateTime.Today,
-                        category: Category.Uncategorised(context),
-                        content: "<p>Post Content.</p>",
-                        description: "A test post.",
-                        id: 19235),
-                    new Post(
-                        context: context,
-                        title: "Another Test Post",
-                        link: "another-test-post",
-                        publishTime: DateTime.Today,
-                        category: Category.Uncategorised(context),
-                        content: "<p>Post Content.</p>",
-                        description: "Another test post.",
-                        id: 100))
-                    .SetArgDisplayNames("x", "y")
+                yield return new TestCaseData(
+                    new Func<ApplicationDbContext, Post>((context) =>
+                    {
+                        return new Post(context, "A Post", "<p>Post content.</p>", 55);
+                    }),
+                    new Func<ApplicationDbContext, Post>((context) =>
+                    {
+                        return new Post(context, "A Post", "<p>Post content.</p>", 55);
+                    }))
+                    .SetArgDisplayNames("x", "x")
                     .Returns(true);
-                }
-            }
-        }
 
-        public static IEnumerable TransitiveData
-        {
-            get
-            {
-                // Ensure we have a database context
-                if (DbOptions == null)
-                {
-                    SqliteConnection dbConnection;
-                    DbContextOptions<ApplicationDbContext> dbOptions;
-                    CreateDatabase(out dbConnection, out dbOptions);
-
-                    DbConnection    = dbConnection;
-                    DbOptions       = dbOptions;
-                }
-
-                using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
-                {
-                    Post firstPost  = new Post(context, "Test Post", "<p>Post content.</p>", 55);
-                    Post secondPost = new Post(context, "Test Post", "<p>Post content.</p>", 55);
-                    Post thirdPost  = new Post(context, "Test Post", "<p>Post content.</p>", 55);
-                    yield return new TestCaseData(firstPost, secondPost, thirdPost)
-                        .SetArgDisplayNames("x", "x", "x")
-                        .Returns(true);
-
-                    yield return new TestCaseData(
-                        new Post(
+                yield return new TestCaseData(
+                    new Func<ApplicationDbContext, Post>((context) =>
+                    {
+                        return new Post(
                             context: context,
                             title: "Test Post",
                             link: "test-post",
@@ -97,8 +40,12 @@ namespace CoderAndy.Models.Blog.Tests
                             category: Category.Uncategorised(context),
                             content: "<p>Post Content.</p>",
                             description: "A test post.",
-                            id: 35634),
-                        new Post(
+                            id: 19235
+                        );
+                    }),
+                    new Func<ApplicationDbContext, Post>((context) =>
+                    {
+                        return new Post(
                             context: context,
                             title: "Another Test Post",
                             link: "another-test-post",
@@ -106,8 +53,62 @@ namespace CoderAndy.Models.Blog.Tests
                             category: Category.Uncategorised(context),
                             content: "<p>Post Content.</p>",
                             description: "Another test post.",
-                            id: 26948),
-                        new Post(
+                            id: 100
+                            );
+                    }))
+                .SetArgDisplayNames("x", "y")
+                .Returns(true);
+            }
+        }
+
+        public static IEnumerable TransitiveData
+        {
+            get
+            {
+                yield return new TestCaseData(new Func<ApplicationDbContext, Post>((context) =>
+                {
+                    return new Post(context, "Test Post", "<p>Post content.</p>", 55);
+                }),
+                new Func<ApplicationDbContext, Post>((context) =>
+                {
+                    return new Post(context, "Test Post", "<p>Post content.</p>", 55);
+                }), new Func<ApplicationDbContext, Post>((context) =>
+                {
+                    return new Post(context, "Test Post", "<p>Post content.</p>", 55);
+                }))
+                .SetArgDisplayNames("x", "x", "x")
+                .Returns(true);
+
+                yield return new TestCaseData(
+                    new Func<ApplicationDbContext, Post>((context) =>
+                    {
+                        return new Post(
+                            context: context,
+                            title: "Test Post",
+                            link: "test-post",
+                            publishTime: DateTime.Today,
+                            category: Category.Uncategorised(context),
+                            content: "<p>Post Content.</p>",
+                            description: "A test post.",
+                            id: 35634
+                        );
+                    }),
+                    new Func<ApplicationDbContext, Post>((context) =>
+                    {
+                        return new Post(
+                            context: context,
+                            title: "Another Test Post",
+                            link: "another-test-post",
+                            publishTime: DateTime.Today,
+                            category: Category.Uncategorised(context),
+                            content: "<p>Post Content.</p>",
+                            description: "Another test post.",
+                            id: 26948
+                        );
+                    }),
+                    new Func<ApplicationDbContext, Post>((context) =>
+                    {
+                        return new Post(
                             context: context,
                             title: "Some Test Post",
                             link: "some-test-post",
@@ -115,10 +116,11 @@ namespace CoderAndy.Models.Blog.Tests
                             category: Category.Uncategorised(context),
                             content: "<p>A bunch of post Content.</p>",
                             description: "Some test post.",
-                            id: 15))
-                    .SetArgDisplayNames("x", "y", "z")
-                    .Returns(false);
-                }
+                            id: 15
+                        );
+                    }))
+                .SetArgDisplayNames("x", "y", "z")
+                .Returns(false);
             }
         }
 
@@ -329,48 +331,63 @@ namespace CoderAndy.Models.Blog.Tests
         [Category("Function Test")]
         [Description("Tests usage of Equals(object) with different objects")]
         [TestCaseSource(nameof(SymmetricData))]
-        public bool EqualsObject_Symmetric(Post firstPost, Post secondPost)
+        public bool EqualsObject_Symmetric(Func<ApplicationDbContext, Post> firstPostConstructor, Func<ApplicationDbContext, Post> secondPostConstructor)
         {
-            bool xEqualsY = firstPost.Equals((object)secondPost);
-            bool yEqualsX = secondPost.Equals((object)firstPost);
-
-            // Ensure repeat calls returns the same value
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.AreEqual(xEqualsY, firstPost.Equals((object)secondPost));
-                Assert.AreEqual(yEqualsX, secondPost.Equals((object)firstPost));
-            });
+                Post firstPost  = firstPostConstructor.Invoke(context);
+                Post secondPost = secondPostConstructor.Invoke(context);
 
-            // Symmetric property defined as:
-            // x.Equals(y) returns the same value as y.Equals(x)
-            return xEqualsY == yEqualsX;
+                bool xEqualsY = firstPost.Equals((object)secondPost);
+                bool yEqualsX = secondPost.Equals((object)firstPost);
+
+                // Ensure repeat calls returns the same value
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(xEqualsY, firstPost.Equals((object)secondPost));
+                    Assert.AreEqual(yEqualsX, secondPost.Equals((object)firstPost));
+                });
+
+                // Symmetric property defined as:
+                // x.Equals(y) returns the same value as y.Equals(x)
+                return xEqualsY == yEqualsX;
+            }
         }
 
         [Test]
         [Category("Function Test")]
         [Description("Tests usage of Equals(object) for the transitive property")]
         [TestCaseSource(nameof(TransitiveData))]
-        public bool EqualsObject_Transitive(Post firstPost, Post secondPost, Post thirdPost)
+        public bool EqualsObject_Transitive(Func<ApplicationDbContext, Post> firstPostConstructor, 
+            Func<ApplicationDbContext, Post> secondPostConstructor, 
+            Func<ApplicationDbContext, Post> thirdPostConstructor)
         {
-            bool xEqualsY = firstPost.Equals((object)secondPost);
-            bool yEqualsZ = secondPost.Equals((object)thirdPost);
-            bool xEqualsZ = firstPost.Equals((object)thirdPost);
-
-            // Ensure repeat calls returns the same value
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.AreEqual(xEqualsY, firstPost.Equals((object)secondPost));
-                Assert.AreEqual(yEqualsZ, secondPost.Equals((object)thirdPost));
-                Assert.AreEqual(xEqualsZ, firstPost.Equals((object)thirdPost));
-            });
+                Post firstPost  = firstPostConstructor.Invoke(context);
+                Post secondPost = secondPostConstructor.Invoke(context);
+                Post thirdPost  = thirdPostConstructor.Invoke(context);
 
-            // Transitive property defined as:
-            // if (x.Equals(y) && y.Equals(z)) returns true, then x.Equals(z) returns true
-            if (xEqualsY && yEqualsZ)
-            {
-                return xEqualsZ;
+                bool xEqualsY = firstPost.Equals((object)secondPost);
+                bool yEqualsZ = secondPost.Equals((object)thirdPost);
+                bool xEqualsZ = firstPost.Equals((object)thirdPost);
+
+                // Ensure repeat calls returns the same value
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(xEqualsY, firstPost.Equals((object)secondPost));
+                    Assert.AreEqual(yEqualsZ, secondPost.Equals((object)thirdPost));
+                    Assert.AreEqual(xEqualsZ, firstPost.Equals((object)thirdPost));
+                });
+
+                // Transitive property defined as:
+                // if (x.Equals(y) && y.Equals(z)) returns true, then x.Equals(z) returns true
+                if (xEqualsY && yEqualsZ)
+                {
+                    return xEqualsZ;
+                }
+                return false;
             }
-            return false;
         }
 
         [Test]
@@ -420,45 +437,61 @@ namespace CoderAndy.Models.Blog.Tests
         [Category("Function Test")]
         [Description("Tests usage of Equals(post) with different objects")]
         [TestCaseSource(nameof(SymmetricData))]
-        public bool EqualsPost_Symmetric(Post firstPost, Post secondPost)
+        public bool EqualsPost_Symmetric(Func<ApplicationDbContext, Post> firstPostConstructor, 
+            Func<ApplicationDbContext, Post> secondPostConstructor)
         {
-            bool xEqualsY = firstPost.Equals(secondPost);
-            bool yEqualsX = secondPost.Equals(firstPost);
-
-            // Ensure repeat calls returns the same value
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.AreEqual(xEqualsY, firstPost.Equals(secondPost));
-                Assert.AreEqual(yEqualsX, secondPost.Equals(firstPost));
-            });
+                Post firstPost  = firstPostConstructor.Invoke(context);
+                Post secondPost = secondPostConstructor.Invoke(context);
 
-            // Symmetric property defined as:
-            // x.Equals(y) returns the same value as y.Equals(x)
-            return xEqualsY == yEqualsX;
+                bool xEqualsY = firstPost.Equals(secondPost);
+                bool yEqualsX = secondPost.Equals(firstPost);
+
+                // Ensure repeat calls returns the same value
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(xEqualsY, firstPost.Equals(secondPost));
+                    Assert.AreEqual(yEqualsX, secondPost.Equals(firstPost));
+                });
+
+                // Symmetric property defined as:
+                // x.Equals(y) returns the same value as y.Equals(x)
+                return xEqualsY == yEqualsX;
+            }
         }
 
         [Test]
         [Category("Function Test")]
         [Description("Tests usage of Equals(post) for the transitive property")]
         [TestCaseSource(nameof(TransitiveData))]
-        public bool EqualsPost_Transitive(Post firstPost, Post secondPost, Post thirdPost)
+        public bool EqualsPost_Transitive(Func<ApplicationDbContext, Post> firstPostConstructor, 
+            Func<ApplicationDbContext, Post> secondPostConstructor, 
+            Func<ApplicationDbContext, Post> thirdPostConstructor)
         {
-            bool xEqualsY = firstPost.Equals(secondPost);
-            bool yEqualsZ = secondPost.Equals(thirdPost);
-            bool xEqualsZ = firstPost.Equals(thirdPost);
-
-            // Ensure repeat calls returns the same value
-            Assert.AreEqual(xEqualsY, firstPost.Equals(secondPost));
-            Assert.AreEqual(yEqualsZ, secondPost.Equals(thirdPost));
-            Assert.AreEqual(xEqualsZ, firstPost.Equals(thirdPost));
-
-            // Transitive property defined as:
-            // if (x.Equals(y) && y.Equals(z)) returns true, then x.Equals(z) returns true
-            if (xEqualsY && yEqualsZ)
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                return xEqualsZ;
+                Post firstPost  = firstPostConstructor.Invoke(context);
+                Post secondPost = secondPostConstructor.Invoke(context);
+                Post thirdPost  = thirdPostConstructor.Invoke(context);
+
+                bool xEqualsY = firstPost.Equals(secondPost);
+                bool yEqualsZ = secondPost.Equals(thirdPost);
+                bool xEqualsZ = firstPost.Equals(thirdPost);
+
+                // Ensure repeat calls returns the same value
+                Assert.AreEqual(xEqualsY, firstPost.Equals(secondPost));
+                Assert.AreEqual(yEqualsZ, secondPost.Equals(thirdPost));
+                Assert.AreEqual(xEqualsZ, firstPost.Equals(thirdPost));
+
+                // Transitive property defined as:
+                // if (x.Equals(y) && y.Equals(z)) returns true, then x.Equals(z) returns true
+                if (xEqualsY && yEqualsZ)
+                {
+                    return xEqualsZ;
+                }
+                return false;
             }
-            return false;
         }
 
         [Test]
@@ -506,45 +539,61 @@ namespace CoderAndy.Models.Blog.Tests
         [Category("Function Test")]
         [Description("Tests usage of GetHashCode() with different objects")]
         [TestCaseSource(nameof(SymmetricData))]
-        public bool GetHashCode_Symmetric(Post firstPost, Post secondPost)
+        public bool GetHashCode_Symmetric(Func<ApplicationDbContext, Post> firstPostConstructor, 
+            Func<ApplicationDbContext, Post> secondPostConstructor)
         {
-            int firstPostHash   = firstPost.GetHashCode();
-            int secondPostHash  = secondPost.GetHashCode();
-
-            // Ensure repeat calls returns the same value
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.AreEqual(firstPostHash, firstPost.GetHashCode());
-                Assert.AreEqual(secondPostHash, secondPost.GetHashCode());
-            });
+                Post firstPost  = firstPostConstructor.Invoke(context);
+                Post secondPost = secondPostConstructor.Invoke(context);
 
-            // Symmetric property defined as:
-            // x.Equals(y) returns the same value as y.Equals(x)
-            return (firstPostHash == secondPostHash) == (secondPostHash == firstPostHash);
+                int firstPostHash   = firstPost.GetHashCode();
+                int secondPostHash  = secondPost.GetHashCode();
+
+                // Ensure repeat calls returns the same value
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(firstPostHash, firstPost.GetHashCode());
+                    Assert.AreEqual(secondPostHash, secondPost.GetHashCode());
+                });
+
+                // Symmetric property defined as:
+                // x.Equals(y) returns the same value as y.Equals(x)
+                return (firstPostHash == secondPostHash) == (secondPostHash == firstPostHash);
+            }
         }
 
         [Test]
         [Category("Function Test")]
         [Description("Tests usage of GetHashCode() for the transitive property")]
         [TestCaseSource(nameof(TransitiveData))]
-        public bool GetHashCode_Transitive(Post firstPost, Post secondPost, Post thirdPost)
+        public bool GetHashCode_Transitive(Func<ApplicationDbContext, Post> firstPostConstructor,
+            Func<ApplicationDbContext, Post> secondPostConstructor,
+            Func<ApplicationDbContext, Post> thirdPostConstructor)
         {
-            int firstPostHash   = firstPost.GetHashCode();
-            int secondPostHash  = secondPost.GetHashCode();
-            int thirdPostHash   = thirdPost.GetHashCode();
-
-            // Ensure repeat calls returns the same value
-            Assert.AreEqual(firstPostHash, firstPost.GetHashCode());
-            Assert.AreEqual(secondPostHash, secondPost.GetHashCode());
-            Assert.AreEqual(thirdPostHash, thirdPost.GetHashCode());
-
-            // Transitive property defined as:
-            // if (x.Equals(y) && y.Equals(z)) returns true, then x.Equals(z) returns true
-            if ((firstPostHash == secondPostHash) && (secondPostHash == thirdPostHash))
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                return firstPostHash == thirdPostHash;
+                Post firstPost  = firstPostConstructor.Invoke(context);
+                Post secondPost = secondPostConstructor.Invoke(context);
+                Post thirdPost  = thirdPostConstructor.Invoke(context);
+
+                int firstPostHash   = firstPost.GetHashCode();
+                int secondPostHash  = secondPost.GetHashCode();
+                int thirdPostHash   = thirdPost.GetHashCode();
+
+                // Ensure repeat calls returns the same value
+                Assert.AreEqual(firstPostHash, firstPost.GetHashCode());
+                Assert.AreEqual(secondPostHash, secondPost.GetHashCode());
+                Assert.AreEqual(thirdPostHash, thirdPost.GetHashCode());
+
+                // Transitive property defined as:
+                // if (x.Equals(y) && y.Equals(z)) returns true, then x.Equals(z) returns true
+                if ((firstPostHash == secondPostHash) && (secondPostHash == thirdPostHash))
+                {
+                    return firstPostHash == thirdPostHash;
+                }
+                return false;
             }
-            return false;
         }
 
         #endregion
@@ -579,45 +628,61 @@ namespace CoderAndy.Models.Blog.Tests
         [Category("Function Test")]
         [Description("Tests usage of the equality operator with different objects")]
         [TestCaseSource(nameof(SymmetricData))]
-        public bool EqualityOperator_Symmetric(Post firstPost, Post secondPost)
+        public bool EqualityOperator_Symmetric(Func<ApplicationDbContext, Post> firstPostConstructor,
+            Func<ApplicationDbContext, Post> secondPostConstructor)
         {
-            bool xEqualsY = firstPost == secondPost;
-            bool yEqualsX = secondPost == firstPost;
-
-            // Ensure repeat calls returns the same value
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.AreEqual(xEqualsY, firstPost == secondPost);
-                Assert.AreEqual(yEqualsX, secondPost == firstPost);
-            });
+                Post firstPost  = firstPostConstructor.Invoke(context);
+                Post secondPost = secondPostConstructor.Invoke(context);
 
-            // Symmetric property defined as:
-            // x.Equals(y) returns the same value as y.Equals(x)
-            return xEqualsY == yEqualsX;
+                bool xEqualsY = firstPost == secondPost;
+                bool yEqualsX = secondPost == firstPost;
+
+                // Ensure repeat calls returns the same value
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(xEqualsY, firstPost == secondPost);
+                    Assert.AreEqual(yEqualsX, secondPost == firstPost);
+                });
+
+                // Symmetric property defined as:
+                // x.Equals(y) returns the same value as y.Equals(x)
+                return xEqualsY == yEqualsX;
+            }
         }
 
         [Test]
         [Category("Function Test")]
         [Description("Tests usage of the equality operator for the transitive property")]
         [TestCaseSource(nameof(TransitiveData))]
-        public bool EqualityOperator_Transitive(Post firstPost, Post secondPost, Post thirdPost)
+        public bool EqualityOperator_Transitive(Func<ApplicationDbContext, Post> firstPostConstructor,
+            Func<ApplicationDbContext, Post> secondPostConstructor,
+            Func<ApplicationDbContext, Post> thirdPostConstructor)
         {
-            bool xEqualsY = firstPost == secondPost;
-            bool yEqualsZ = secondPost == thirdPost;
-            bool xEqualsZ = firstPost == thirdPost;
-
-            // Ensure repeat calls returns the same value
-            Assert.AreEqual(xEqualsY, firstPost == secondPost);
-            Assert.AreEqual(yEqualsZ, secondPost == thirdPost);
-            Assert.AreEqual(xEqualsZ, firstPost == thirdPost);
-
-            // Transitive property defined as:
-            // if (x.Equals(y) && y.Equals(z)) returns true, then x.Equals(z) returns true
-            if (xEqualsY && yEqualsZ)
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                return xEqualsZ;
+                Post firstPost  = firstPostConstructor.Invoke(context);
+                Post secondPost = secondPostConstructor.Invoke(context);
+                Post thirdPost  = thirdPostConstructor.Invoke(context);
+
+                bool xEqualsY = firstPost == secondPost;
+                bool yEqualsZ = secondPost == thirdPost;
+                bool xEqualsZ = firstPost == thirdPost;
+
+                // Ensure repeat calls returns the same value
+                Assert.AreEqual(xEqualsY, firstPost == secondPost);
+                Assert.AreEqual(yEqualsZ, secondPost == thirdPost);
+                Assert.AreEqual(xEqualsZ, firstPost == thirdPost);
+
+                // Transitive property defined as:
+                // if (x.Equals(y) && y.Equals(z)) returns true, then x.Equals(z) returns true
+                if (xEqualsY && yEqualsZ)
+                {
+                    return xEqualsZ;
+                }
+                return false;
             }
-            return false;
         }
 
         [Test]
@@ -670,45 +735,61 @@ namespace CoderAndy.Models.Blog.Tests
         [Category("Function Test")]
         [Description("Tests usage of the inequality operator with different objects")]
         [TestCaseSource(nameof(SymmetricData))]
-        public bool InequalityOperator_Symmetric(Post firstPost, Post secondPost)
+        public bool InequalityOperator_Symmetric(Func<ApplicationDbContext, Post> firstPostConstructor,
+            Func<ApplicationDbContext, Post> secondPostConstructor)
         {
-            bool xNotEqualToY = firstPost != secondPost;
-            bool yNotEqualToX = secondPost != firstPost;
-
-            // Ensure repeat calls returns the same value
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.AreEqual(xNotEqualToY, firstPost != secondPost);
-                Assert.AreEqual(yNotEqualToX, secondPost != firstPost);
-            });
+                Post firstPost  = firstPostConstructor.Invoke(context);
+                Post secondPost = secondPostConstructor.Invoke(context);
 
-            // Symmetric property defined as:
-            // x.Equals(y) returns the same value as y.Equals(x)
-            return xNotEqualToY == yNotEqualToX;
+                bool xNotEqualToY = firstPost != secondPost;
+                bool yNotEqualToX = secondPost != firstPost;
+
+                // Ensure repeat calls returns the same value
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(xNotEqualToY, firstPost != secondPost);
+                    Assert.AreEqual(yNotEqualToX, secondPost != firstPost);
+                });
+
+                // Symmetric property defined as:
+                // x.Equals(y) returns the same value as y.Equals(x)
+                return xNotEqualToY == yNotEqualToX;
+            }
         }
 
         [Test]
         [Category("Function Test")]
         [Description("Tests usage of the inequality operator for the transitive property")]
         [TestCaseSource(nameof(TransitiveData))]
-        public bool InequalityOperator_Transitive(Post firstPost, Post secondPost, Post thirdPost)
+        public bool InequalityOperator_Transitive(Func<ApplicationDbContext, Post> firstPostConstructor,
+            Func<ApplicationDbContext, Post> secondPostConstructor,
+            Func<ApplicationDbContext, Post> thirdPostConstructor)
         {
-            bool xNotEqualToY = firstPost != secondPost;
-            bool yNotEqualToZ = secondPost != thirdPost;
-            bool xNotEqualToZ = firstPost != thirdPost;
-
-            // Ensure repeat calls returns the same value
-            Assert.AreEqual(xNotEqualToY, firstPost != secondPost);
-            Assert.AreEqual(yNotEqualToZ, secondPost != thirdPost);
-            Assert.AreEqual(xNotEqualToZ, firstPost != thirdPost);
-
-            // Transitive property defined as:
-            // if (x.Equals(y) && y.Equals(z)) returns true, then x.Equals(z) returns true
-            if (!xNotEqualToY && !yNotEqualToZ)
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                return !xNotEqualToZ;
+                Post firstPost  = firstPostConstructor.Invoke(context);
+                Post secondPost = secondPostConstructor.Invoke(context);
+                Post thirdPost  = thirdPostConstructor.Invoke(context);
+
+                bool xNotEqualToY = firstPost != secondPost;
+                bool yNotEqualToZ = secondPost != thirdPost;
+                bool xNotEqualToZ = firstPost != thirdPost;
+
+                // Ensure repeat calls returns the same value
+                Assert.AreEqual(xNotEqualToY, firstPost != secondPost);
+                Assert.AreEqual(yNotEqualToZ, secondPost != thirdPost);
+                Assert.AreEqual(xNotEqualToZ, firstPost != thirdPost);
+
+                // Transitive property defined as:
+                // if (x.Equals(y) && y.Equals(z)) returns true, then x.Equals(z) returns true
+                if (!xNotEqualToY && !yNotEqualToZ)
+                {
+                    return !xNotEqualToZ;
+                }
+                return false;
             }
-            return false;
         }
 
         [Test]

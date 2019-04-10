@@ -15,12 +15,12 @@ namespace CoderAndy.Tests.TestFixtureBases
         /// <summary>
         /// Connection to the database
         /// </summary>
-        protected static SqliteConnection DbConnection { get; set; }
+        protected SqliteConnection DbConnection { get; private set; }
 
         /// <summary>
         /// Database context options object for the active connection
         /// </summary>
-        protected static DbContextOptions<ApplicationDbContext> DbOptions { get; set; }
+        protected DbContextOptions<ApplicationDbContext> DbOptions { get; private set; }
 
         #endregion
 
@@ -30,27 +30,29 @@ namespace CoderAndy.Tests.TestFixtureBases
         /// One time set-up of the test fixture
         /// </summary>
         [OneTimeSetUp]
-        protected virtual void OnetimeSetup()
+        public virtual void OnetimeSetup()
         {
-            if (DbOptions != null &&
-                DbConnection != null)
+            // Create in-memory database
+            DbConnection = new SqliteConnection("DataSource=:memory:");
+            DbConnection.Open();
+
+            // Create DbContext Options object
+            DbOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+                    .UseSqlite(DbConnection)
+                    .Options;
+
+            // Apply database migration
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                return;
+                context.Database.Migrate();
             }
-
-            SqliteConnection dbConnection;
-            DbContextOptions<ApplicationDbContext> dbOptions;
-            CreateDatabase(out dbConnection, out dbOptions);
-
-            DbConnection    = dbConnection;
-            DbOptions       = DbOptions;
         }
 
         /// <summary>
         /// Run after every test in this fixture
         /// </summary>
         [TearDown]
-        protected virtual void TearDown()
+        public virtual void TearDown()
         {
             using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
@@ -66,49 +68,12 @@ namespace CoderAndy.Tests.TestFixtureBases
         /// One time tear-down of the test fixture
         /// </summary>
         [OneTimeTearDown]
-        protected virtual void OnetimeTearDown()
+        public virtual void OnetimeTearDown()
         {
-            if (DbConnection == null)
-            {
-                return;
-            }
-
-            DestroyDatabase(DbConnection);
+            DbConnection.Close();
 
             DbConnection    = null;
             DbOptions       = null;
-        }
-
-        #endregion
-
-        #region Public Functions
-
-        protected static void CreateDatabase(out SqliteConnection connection, out DbContextOptions<ApplicationDbContext> options)
-        {
-            // Create in-memory database
-            connection = new SqliteConnection("DataSource=:memory:");
-            connection.Open();
-
-            // Create DbContext Options object
-            options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                    .UseSqlite(connection)
-                    .Options;
-
-            // Apply database migration
-            using (ApplicationDbContext context = new ApplicationDbContext(options))
-            {
-                context.Database.Migrate();
-            }
-        }
-
-        protected static void DestroyDatabase(SqliteConnection connection)
-        {
-            if (connection == null)
-            {
-                throw new System.ArgumentNullException(nameof(connection));
-            }
-
-            connection.Close();
         }
 
         #endregion
