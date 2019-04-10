@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Linq;
 using System.ComponentModel.DataAnnotations;
+using CoderAndy.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoderAndy.Models.Blog
 {
@@ -34,16 +37,32 @@ namespace CoderAndy.Models.Blog
 
         #endregion
 
-        #region Static Properties
+        #region Public Functions
 
         /// <summary>
         /// Default category for posts without a category set.
         /// </summary>
-        public static readonly Category Uncategorised = new Category("Uncategorised", "uncategorised", null, 1);
+        /// <param name="dbContext">DbContext to retrieve the 'Uncategorised' category</param>
+        /// <returns>Default category for posts without a category set.</returns>
+        public static Category Uncategorised(ApplicationDbContext dbContext)
+        {
+            IQueryable<Category> uncategorised = from category in dbContext.Categories
+                                                 where string.Equals("uncategorised", category.LinkName)
+                                                 select category;
 
-        #endregion
+            return uncategorised.First();
+        }
 
-        #region Public Functions
+        /// <summary>
+        /// Creates the schema required for the blog Category model
+        /// </summary>
+        /// <param name="builder">The builder being used to construct the model</param>
+        public static void BuildModel(ModelBuilder builder)
+        {
+            // Set data with uncategorised category
+            Category uncategorised = new Category("Uncategorised", "uncategorised", null, 1);
+            builder.Entity<Category>().HasData(uncategorised);
+        }
 
         /// <summary>
         /// Indicates whether the current object is equal to another object of the same type.
@@ -168,10 +187,10 @@ namespace CoderAndy.Models.Blog
         /// <param name="id">Database ID of this category</param>
         public Category(string name, string linkName, Category parent, int id = 0)
         {
-            Id = id;
-            Name = name;
-            LinkName = BlogHelper.NameToLinkName(linkName);
-            Parent = parent;
+            Id          = id;
+            Name        = name;
+            LinkName    = BlogHelper.NameToLinkName(linkName);
+            Parent      = parent;
         }
 
         /// <summary>

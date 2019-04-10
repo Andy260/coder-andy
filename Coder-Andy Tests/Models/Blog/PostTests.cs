@@ -1,5 +1,9 @@
 ﻿using System;
 using System.Collections;
+using CoderAndy.Data;
+using CoderAndy.Tests.TestFixtureBases;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace CoderAndy.Models.Blog.Tests
@@ -7,7 +11,7 @@ namespace CoderAndy.Models.Blog.Tests
     [TestFixture]
     [Parallelizable]
     [TestOf(typeof(Post))]
-    public class PostTests
+    public class PostTests : DBUnitFixture
     {
         #region Test Data
 
@@ -15,31 +19,48 @@ namespace CoderAndy.Models.Blog.Tests
         {
             get
             {
-                Post firstPost = new Post("A Post", "<p>Post content.</p>", 55);
-                Post secondPost = new Post("A Post", "<p>Post content.</p>", 55);
-                yield return new TestCaseData(firstPost, secondPost)
-                    .SetArgDisplayNames("x", "x")
-                    .Returns(true);
+                // Ensure we have a database context
+                if (DbOptions == null)
+                {
+                    SqliteConnection dbConnection;
+                    DbContextOptions<ApplicationDbContext> dbOptions;
+                    CreateDatabase(out dbConnection, out dbOptions);
 
-                yield return new TestCaseData(
+                    DbConnection    = dbConnection;
+                    DbOptions       = dbOptions;
+                }
+
+                using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
+                {
+                    Post firstPost  = new Post(context, "A Post", "<p>Post content.</p>", 55);
+                    Post secondPost = new Post(context, "A Post", "<p>Post content.</p>", 55);
+
+                    yield return new TestCaseData(firstPost, secondPost)
+                        .SetArgDisplayNames("x", "x")
+                        .Returns(true);
+
+                    yield return new TestCaseData(
                     new Post(
+                        context: context,
                         title: "Test Post",
                         link: "test-post",
                         publishTime: DateTime.Today,
-                        category: Category.Uncategorised,
+                        category: Category.Uncategorised(context),
                         content: "<p>Post Content.</p>",
                         description: "A test post.",
                         id: 19235),
                     new Post(
+                        context: context,
                         title: "Another Test Post",
                         link: "another-test-post",
                         publishTime: DateTime.Today,
-                        category: Category.Uncategorised,
+                        category: Category.Uncategorised(context),
                         content: "<p>Post Content.</p>",
                         description: "Another test post.",
                         id: 100))
                     .SetArgDisplayNames("x", "y")
                     .Returns(true);
+                }
             }
         }
 
@@ -47,40 +68,83 @@ namespace CoderAndy.Models.Blog.Tests
         {
             get
             {
-                Post firstPost  = new Post("Test Post", "<p>Post content.</p>", 55);
-                Post secondPost = new Post("Test Post", "<p>Post content.</p>", 55);
-                Post thirdPost  = new Post("Test Post", "<p>Post content.</p>", 55);
-                yield return new TestCaseData(firstPost, secondPost, thirdPost)
-                    .SetArgDisplayNames("x", "x", "x")
-                    .Returns(true);
+                // Ensure we have a database context
+                if (DbOptions == null)
+                {
+                    SqliteConnection dbConnection;
+                    DbContextOptions<ApplicationDbContext> dbOptions;
+                    CreateDatabase(out dbConnection, out dbOptions);
 
-                yield return new TestCaseData(
-                    new Post(
-                        title: "Test Post",
-                        link: "test-post",
-                        publishTime: DateTime.Today,
-                        category: Category.Uncategorised,
-                        content: "<p>Post Content.</p>",
-                        description: "A test post.",
-                        id: 35634),
-                    new Post(
-                        title: "Another Test Post",
-                        link: "another-test-post",
-                        publishTime: DateTime.Today,
-                        category: Category.Uncategorised,
-                        content: "<p>Post Content.</p>",
-                        description: "Another test post.",
-                        id: 26948),
-                    new Post(
-                        title: "Some Test Post",
-                        link: "some-test-post",
-                        publishTime: DateTime.Today,
-                        category: Category.Uncategorised,
-                        content: "<p>A bunch of post Content.</p>",
-                        description: "Some test post.",
-                        id: 15))
-                .SetArgDisplayNames("x", "y", "z")
-                .Returns(false);
+                    DbConnection    = dbConnection;
+                    DbOptions       = dbOptions;
+                }
+
+                using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
+                {
+                    Post firstPost  = new Post(context, "Test Post", "<p>Post content.</p>", 55);
+                    Post secondPost = new Post(context, "Test Post", "<p>Post content.</p>", 55);
+                    Post thirdPost  = new Post(context, "Test Post", "<p>Post content.</p>", 55);
+                    yield return new TestCaseData(firstPost, secondPost, thirdPost)
+                        .SetArgDisplayNames("x", "x", "x")
+                        .Returns(true);
+
+                    yield return new TestCaseData(
+                        new Post(
+                            context: context,
+                            title: "Test Post",
+                            link: "test-post",
+                            publishTime: DateTime.Today,
+                            category: Category.Uncategorised(context),
+                            content: "<p>Post Content.</p>",
+                            description: "A test post.",
+                            id: 35634),
+                        new Post(
+                            context: context,
+                            title: "Another Test Post",
+                            link: "another-test-post",
+                            publishTime: DateTime.Today,
+                            category: Category.Uncategorised(context),
+                            content: "<p>Post Content.</p>",
+                            description: "Another test post.",
+                            id: 26948),
+                        new Post(
+                            context: context,
+                            title: "Some Test Post",
+                            link: "some-test-post",
+                            publishTime: DateTime.Today,
+                            category: Category.Uncategorised(context),
+                            content: "<p>A bunch of post Content.</p>",
+                            description: "Some test post.",
+                            id: 15))
+                    .SetArgDisplayNames("x", "y", "z")
+                    .Returns(false);
+                }
+            }
+        }
+
+        public static IEnumerable FullConstructorData
+        {
+            get
+            {
+                int id                  = 15429;
+                string title            = "Test Post";
+                string link             = "test-post";
+                DateTime publishTime    = new DateTime(2019, 3, 1);
+                Category category       = new Category("Test Category", null);
+                string content          = "<p>Test Content</p>";
+                string description      = "Test Post description";
+
+                yield return new TestCaseData(id, title, link, publishTime, category, content, description);
+
+                id                      = 4561;
+                title                   = "A Test Post";
+                link                    = "a-test-post";
+                publishTime             = new DateTime(2018, 6, 3);
+                category                  = null;
+                content                 = "<p>The Post Content</p>";
+                description             = "A Test Post description.";
+
+                yield return new TestCaseData(id, title, link, publishTime, category, content, description);
             }
         }
 
@@ -91,28 +155,27 @@ namespace CoderAndy.Models.Blog.Tests
         [Test]
         [Category("Constructor Test")]
         [Description("Tests expected usage of the full constructor")]
-        public void FullConstructor()
+        [TestCaseSource(nameof(FullConstructorData))]
+        public void FullConstructor(int id, string title, string link, DateTime publishTime, Category category, string content, string description)
         {
-            int id = 15429;
-            string title = "Test Post";
-            string link = "test-post";
-            DateTime publishTime = new DateTime(2019, 3, 1);
-            Category category = new Category("Test Category", null);
-            string content = "<p>Test Content</p>";
-            string description = "Test Post description";
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
+            {
+                Post post = new Post(context, title, link, publishTime, category, content, description, id);
 
-            Post post = new Post(title, link, publishTime, category, content, description, id);
-
-            // Ensure created post object has expected values
-            Assert.AreEqual(id, post.Id);
-            Assert.AreEqual(title, post.Title);
-            Assert.AreEqual(link, post.Link);
-            Assert.AreEqual(DateTime.Today, post.CreationTime);
-            Assert.AreEqual(DateTime.Today, post.LastModificationTime);
-            Assert.AreEqual(publishTime, post.PublishTime);
-            Assert.AreEqual(category, post.Category);
-            Assert.AreEqual(content, post.Content);
-            Assert.AreEqual(description, post.Description);
+                // Ensure created post object has expected values
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(id, post.Id);
+                    Assert.AreEqual(title, post.Title);
+                    Assert.AreEqual(link, post.Link);
+                    Assert.AreEqual(DateTime.Today, post.CreationTime);
+                    Assert.AreEqual(DateTime.Today, post.LastModificationTime);
+                    Assert.AreEqual(publishTime, post.PublishTime);
+                    Assert.AreEqual(category ?? Category.Uncategorised(context), post.Category);
+                    Assert.AreEqual(content, post.Content);
+                    Assert.AreEqual(description, post.Description);
+                });
+            }
         }
 
         [Test]
@@ -120,23 +183,29 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests expected usage of the partial constructor")]
         public void PartialConstructor()
         {
-            int id = 10;
-            string title = "Test Post";
-            Category category = new Category("Test Category", null);
-            string content = "<p>Test Content</p>";
+            int id              = 10;
+            string title        = "Test Post";
+            Category category   = new Category("Test Category", null);
+            string content      = "<p>Test Content</p>";
 
-            Post post = new Post(title, category, content, id);
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
+            {
+                Post post = new Post(context, title, category, content, id);
 
-            // Ensure created post object has expected values
-            Assert.AreEqual(id, post.Id);
-            Assert.AreEqual(title, post.Title);
-            Assert.AreEqual("test-post", post.Link);
-            Assert.AreEqual(DateTime.Today, post.CreationTime);
-            Assert.AreEqual(DateTime.Today, post.LastModificationTime);
-            Assert.AreEqual(DateTime.Today, post.PublishTime);
-            Assert.AreEqual(category, post.Category);
-            Assert.AreEqual(content, post.Content);
-            Assert.IsNull(post.Description);
+                // Ensure created post object has expected values
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(id, post.Id);
+                    Assert.AreEqual(title, post.Title);
+                    Assert.AreEqual("test-post", post.Link);
+                    Assert.AreEqual(DateTime.Today, post.CreationTime);
+                    Assert.AreEqual(DateTime.Today, post.LastModificationTime);
+                    Assert.AreEqual(DateTime.Today, post.PublishTime);
+                    Assert.AreEqual(category, post.Category);
+                    Assert.AreEqual(content, post.Content);
+                    Assert.IsNull(post.Description);
+                });
+            }
         }
 
         [Test]
@@ -144,11 +213,28 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests expected usage of partial-minimum constructor")]
         public void PartialMinConstructor()
         {
-            int id = 15734;
-            string title = "Another Test Post";
-            string content = "<h1>More Test Content</h1>";
+            int id          = 15734;
+            string title    = "Another Test Post";
+            string content  = "<h1>More Test Content</h1>";
 
-            Post post = new Post(title, content, id);
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
+            {
+                Post post = new Post(context, title, content, id);
+
+                // Ensure created post object has expected values
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(id, post.Id);
+                    Assert.AreEqual(title, post.Title);
+                    Assert.AreEqual("another-test-post", post.Link);
+                    Assert.AreEqual(DateTime.Today, post.CreationTime);
+                    Assert.AreEqual(DateTime.Today, post.LastModificationTime);
+                    Assert.AreEqual(DateTime.Today, post.PublishTime);
+                    Assert.AreEqual(Category.Uncategorised(context), post.Category);
+                    Assert.AreEqual(content, post.Content);
+                    Assert.IsTrue(string.IsNullOrEmpty(post.Description));
+                });
+            }
         }
 
         [Test]
@@ -156,19 +242,26 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests expected usage of the minimum constructor")]
         public void MinConstructor()
         {
-            int id = 56;
-            Post post = new Post(id);
+            int id      = 56;
 
-            // Ensure created post object has expected values
-            Assert.AreEqual(id, post.Id);
-            Assert.IsTrue(string.IsNullOrEmpty(post.Title));
-            Assert.AreEqual("_", post.Link);
-            Assert.AreEqual(DateTime.Today, post.CreationTime);
-            Assert.AreEqual(DateTime.Today, post.LastModificationTime);
-            Assert.AreEqual(DateTime.Today, post.PublishTime);
-            Assert.AreEqual(Category.Uncategorised, post.Category);
-            Assert.IsTrue(string.IsNullOrEmpty(post.Content));
-            Assert.IsTrue(string.IsNullOrEmpty(post.Description));
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
+            {
+                Post post = new Post(context, id);
+
+                // Ensure created post object has expected values
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(id, post.Id);
+                    Assert.IsTrue(string.IsNullOrEmpty(post.Title));
+                    Assert.AreEqual("_", post.Link);
+                    Assert.AreEqual(DateTime.Today, post.CreationTime);
+                    Assert.AreEqual(DateTime.Today, post.LastModificationTime);
+                    Assert.AreEqual(DateTime.Today, post.PublishTime);
+                    Assert.AreEqual(Category.Uncategorised(context), post.Category);
+                    Assert.IsTrue(string.IsNullOrEmpty(post.Content));
+                    Assert.IsTrue(string.IsNullOrEmpty(post.Description));
+                });
+            }
         }
 
         #endregion
@@ -180,16 +273,22 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests expected usage of IsPublished()")]
         public void IsPublished()
         {
-            // Create Post object
-            DateTime publishTime = DateTime.UtcNow - TimeSpan.FromDays(1);
-            Post post = new Post("Another Test Post", "another-test-post", publishTime, null, null, null, 147654);
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
+            {
+                // Create Post object
+                DateTime publishTime = DateTime.UtcNow - TimeSpan.FromDays(1);
+                Post post = new Post(context, "Another Test Post", "another-test-post", publishTime, null, null, null, 147654);
 
-            // Ensure posts published in the past are considered published
-            Assert.IsTrue(post.IsPublished(DateTime.UtcNow));
+                Assert.Multiple(() =>
+                {
+                    // Ensure posts published in the past are considered published
+                    Assert.IsTrue(post.IsPublished(DateTime.UtcNow));
 
-            // Ensure posts published in the future aren't considered published
-            post.PublishTime += TimeSpan.FromDays(2);
-            Assert.IsFalse(post.IsPublished(DateTime.UtcNow));
+                    // Ensure posts published in the future aren't considered published
+                    post.PublishTime += TimeSpan.FromDays(2);
+                    Assert.IsFalse(post.IsPublished(DateTime.UtcNow));
+                });
+            }
         }
 
         [Test]
@@ -197,9 +296,12 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests expected usage of ToString()")]
         public new void ToString()
         {
-            Post post = new Post("Test Post", "<p>Content.</p>");
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
+            {
+                Post post = new Post(context, "Test Post", "<p>Content.</p>");
 
-            Assert.AreEqual(post.Title, post.ToString());
+                Assert.AreEqual(post.Title, post.ToString());
+            }
         }
 
         [Test]
@@ -207,17 +309,20 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests usage of Equals(object) with itself")]
         public void EqualsObject_Reflexive()
         {
-            Post post = new Post("Test Post", "<p>Post Content</p>", 56);
-
-            // Reflexive property defined as:
-            // x.Equals(x) returns true
-
-            // Ensure repeat calls return the same value
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.IsTrue(post.Equals((object)post));
-                Assert.IsTrue(post.Equals((object)post));
-            });
+                Post post = new Post(context, "Test Post", "<p>Post Content</p>", 56);
+
+                // Reflexive property defined as:
+                // x.Equals(x) returns true
+
+                // Ensure repeat calls return the same value
+                Assert.Multiple(() =>
+                {
+                    Assert.IsTrue(post.Equals((object)post));
+                    Assert.IsTrue(post.Equals((object)post));
+                });
+            }
         }
 
         [Test]
@@ -273,18 +378,21 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests usage of Equals(object) with NULL as the parameter, and calling object")]
         public void EqualsObject_Null()
         {
-            Post post = new Post("Test Post", "<p>Post Content</p>", 56);
-
-            // Ensure checking against NULL returns false
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.IsFalse(post.Equals((object)null));
-                Assert.IsFalse(post.Equals((object)null));
-            });
+                Post post = new Post(context, "Test Post", "<p>Post Content</p>", 56);
 
-            // Ensure checking with a null post throws an exception
-            Post nullPost = null;
-            Assert.Throws<NullReferenceException>(() => nullPost.Equals((object)null));
+                // Ensure checking against NULL returns false
+                Assert.Multiple(() =>
+                {
+                    Assert.IsFalse(post.Equals((object)null));
+                    Assert.IsFalse(post.Equals((object)null));
+                });
+
+                // Ensure checking with a null post throws an exception
+                Post nullPost = null;
+                Assert.Throws<NullReferenceException>(() => nullPost.Equals((object)null));
+            }
         }
 
         [Test]
@@ -292,17 +400,20 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests usage of Equals(post) with itself")]
         public void EqualsPost_Reflexive()
         {
-            Post post = new Post("Test Post", "<p>Post Content</p>", 56);
-
-            // Reflexive property defined as:
-            // x.Equals(x) returns true
-
-            // Ensure repeat calls return the same value
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.IsTrue(post.Equals(post));
-                Assert.IsTrue(post.Equals(post));
-            });
+                Post post = new Post(context, "Test Post", "<p>Post Content</p>", 56);
+
+                // Reflexive property defined as:
+                // x.Equals(x) returns true
+
+                // Ensure repeat calls return the same value
+                Assert.Multiple(() =>
+                {
+                    Assert.IsTrue(post.Equals(post));
+                    Assert.IsTrue(post.Equals(post));
+                });
+            }
         }
 
         [Test]
@@ -355,18 +466,21 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests usage of Equals(post) with NULL as the parameter, and calling object")]
         public void EqualsPost_Null()
         {
-            Post post = new Post("Test Post", "<p>Post Content</p>", 56);
-
-            // Ensure checking against NULL returns false
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.IsFalse(post.Equals(null));
-                Assert.IsFalse(post.Equals(null));
-            });
+                Post post = new Post(context, "Test Post", "<p>Post Content</p>", 56);
 
-            // Ensure checking with a null post throws an exception
-            Post nullPost = null;
-            Assert.Throws<NullReferenceException>(() => nullPost.Equals(null));
+                // Ensure checking against NULL returns false
+                Assert.Multiple(() =>
+                {
+                    Assert.IsFalse(post.Equals(null));
+                    Assert.IsFalse(post.Equals(null));
+                });
+
+                // Ensure checking with a null post throws an exception
+                Post nullPost = null;
+                Assert.Throws<NullReferenceException>(() => nullPost.Equals(null));
+            }
         }
 
         [Test]
@@ -374,15 +488,18 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests usage of GetHashCode() with itself")]
         public void GetHashCode_Reflexive()
         {
-            Post post = new Post("Test Post", "<p>Post Content</p>", 56);
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
+            {
+                Post post = new Post(context, "Test Post", "<p>Post Content</p>", 56);
 
-            // Ensure GetHashCode() returns expected value
-            int expectedHash    = GenerateHashFromPost(post);
-            int hashCode        = post.GetHashCode();
-            Assert.AreEqual(expectedHash, hashCode);
+                // Ensure GetHashCode() returns expected value
+                int expectedHash = GenerateHashFromPost(post);
+                int hashCode = post.GetHashCode();
+                Assert.AreEqual(expectedHash, hashCode);
 
-            // Ensure repeat calls return the same value
-            Assert.AreEqual(hashCode, post.GetHashCode());
+                // Ensure repeat calls return the same value
+                Assert.AreEqual(hashCode, post.GetHashCode());
+            }
         }
 
         [Test]
@@ -439,20 +556,23 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests usage of the equality operator with the same object")]
         public void EqualityOperator_Reflexive()
         {
-            Post post = new Post("Test Post", "<p>Post Content</p>", 56);
-
-            // Reflexive property defined as:
-            // x.Equals(x) returns true
-
-            // Ensure repeat calls return the same value
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                // Complier will throw a warning when comparing an object with itself for equality
+                Post post = new Post(context, "Test Post", "<p>Post Content</p>", 56);
+
+                // Reflexive property defined as:
+                // x.Equals(x) returns true
+
+                // Ensure repeat calls return the same value
+                Assert.Multiple(() =>
+                {
+                    // Complier will throw a warning when comparing an object with itself for equality
 #pragma warning disable CS1718
-                Assert.IsTrue(post == post);
-                Assert.IsTrue(post == post);
+                    Assert.IsTrue(post == post);
+                    Assert.IsTrue(post == post);
 #pragma warning restore CS1718
-            });
+                });
+            }
         }
 
         [Test]
@@ -505,18 +625,21 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests usage of the equality operator with NULL and a valid post object")]
         public void EqualityOperator_Null()
         {
-            Post post = new Post("Test Post", "<p>Post Content</p>", 56);
-
-            // Ensure checking against NULL returns false
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.IsFalse(post == null);
-                Assert.IsFalse(post == null);
-            });
+                Post post = new Post(context, "Test Post", "<p>Post Content</p>", 56);
 
-            // Ensure checking with a null post throws an exception
-            Post nullPost = null;
-            Assert.Throws<NullReferenceException>(() => nullPost.Equals(null));
+                // Ensure checking against NULL returns false
+                Assert.Multiple(() =>
+                {
+                    Assert.IsFalse(post == null);
+                    Assert.IsFalse(post == null);
+                });
+
+                // Ensure checking with a null post throws an exception
+                Post nullPost = null;
+                Assert.Throws<NullReferenceException>(() => nullPost.Equals(null));
+            }
         }
 
         [Test]
@@ -524,20 +647,23 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests usage of the equality operator with the same object")]
         public void InequalityOperator_Reflexive()
         {
-            Post post = new Post("Test Post", "<p>Post Content</p>", 56);
-
-            // Reflexive property defined as:
-            // x.Equals(x) returns true
-
-            // Ensure repeat calls return the same value
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                // Complier will throw a warning when comparing an object with itself for equality
+                Post post = new Post(context, "Test Post", "<p>Post Content</p>", 56);
+
+                // Reflexive property defined as:
+                // x.Equals(x) returns true
+
+                // Ensure repeat calls return the same value
+                Assert.Multiple(() =>
+                {
+                    // Complier will throw a warning when comparing an object with itself for equality
 #pragma warning disable CS1718
-                Assert.IsFalse(post != post);
-                Assert.IsFalse(post != post);
+                    Assert.IsFalse(post != post);
+                    Assert.IsFalse(post != post);
 #pragma warning restore CS1718
-            });
+                });
+            }
         }
 
         [Test]
@@ -590,18 +716,21 @@ namespace CoderAndy.Models.Blog.Tests
         [Description("Tests usage of the inequality operator with NULL and a valid post object")]
         public void InequalityOperator_Null()
         {
-            Post post = new Post("Test Post", "<p>Post Content</p>", 56);
-
-            // Ensure checking against NULL returns true
-            Assert.Multiple(() =>
+            using (ApplicationDbContext context = new ApplicationDbContext(DbOptions))
             {
-                Assert.IsTrue(post != null);
-                Assert.IsTrue(post != null);
-            });
+                Post post = new Post(context, "Test Post", "<p>Post Content</p>", 56);
 
-            // Ensure checking with a null post throws an exception
-            Post nullPost = null;
-            Assert.Throws<NullReferenceException>(() => nullPost.Equals(null));
+                // Ensure checking against NULL returns true
+                Assert.Multiple(() =>
+                {
+                    Assert.IsTrue(post != null);
+                    Assert.IsTrue(post != null);
+                });
+
+                // Ensure checking with a null post throws an exception
+                Post nullPost = null;
+                Assert.Throws<NullReferenceException>(() => nullPost.Equals(null));
+            }
         }
 
         #endregion

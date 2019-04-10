@@ -1,5 +1,8 @@
 using System;
 using System.Collections;
+using CoderAndy.Data;
+using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 using NUnit.Framework;
 
 namespace CoderAndy.Models.Blog.Tests
@@ -199,21 +202,6 @@ namespace CoderAndy.Models.Blog.Tests
             Category category = new Category(a_id);
 
             Assert.AreEqual(a_id, category.Id);
-        }
-
-        #endregion
-
-        #region Static Property Tests
-
-        [Test]
-        [Category("Property Test")]
-        [Description("Tests usage of 'Uncategorised' property")]
-        public void Uncategorised()
-        {
-            Assert.AreEqual(1, Category.Uncategorised.Id);
-            Assert.AreEqual("Uncategorised", Category.Uncategorised.Name);
-            Assert.AreEqual("uncategorised", Category.Uncategorised.LinkName);
-            Assert.IsNull(Category.Uncategorised.Parent);
         }
 
         #endregion
@@ -456,6 +444,42 @@ namespace CoderAndy.Models.Blog.Tests
                 return firstPostHash == thirdPostHash;
             }
             return false;
+        }
+
+        [Test]
+        [Category("Property Test")]
+        [Description("Tests usage of Uncategorised()")]
+        public void Uncategorised()
+        {
+            // Create in-memory database
+            SqliteConnection dbConnection = new SqliteConnection("DataSource=:memory:");
+            dbConnection.Open();
+
+            // Create DbContext Options object
+            DbContextOptions<ApplicationDbContext> dbOptions = new DbContextOptionsBuilder<ApplicationDbContext>()
+                    .UseSqlite(dbConnection)
+                    .Options;
+
+            // Apply database migration
+            using (ApplicationDbContext context = new ApplicationDbContext(dbOptions))
+            {
+                context.Database.Migrate();
+            }
+
+            // Execute method
+            using (ApplicationDbContext context = new ApplicationDbContext(dbOptions))
+            {
+                Category uncategorised = Category.Uncategorised(context);
+
+                // Ensure output has expected data
+                Assert.Multiple(() =>
+                {
+                    Assert.AreEqual(1, uncategorised.Id);
+                    Assert.IsTrue(string.Equals("Uncategorised", uncategorised.Name, StringComparison.Ordinal));
+                    Assert.IsTrue(string.Equals("uncategorised", uncategorised.LinkName, StringComparison.Ordinal));
+                    Assert.IsNull(uncategorised.Parent);
+                });
+            }
         }
 
         #endregion
