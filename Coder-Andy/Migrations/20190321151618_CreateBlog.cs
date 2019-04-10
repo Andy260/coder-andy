@@ -54,6 +54,11 @@ namespace CoderAndy.Migrations
                         onDelete: ReferentialAction.Cascade);
                 });
 
+            migrationBuilder.InsertData(
+                table: "Categories",
+                columns: new[] { "Id", "LinkName", "Name", "ParentId" },
+                values: new object[] { 1, "uncategorised", "Uncategorised", null });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Categories_ParentId",
                 table: "Categories",
