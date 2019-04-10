@@ -19,7 +19,7 @@ paths.minCss        = paths.webroot + "css/**/*.min.css";
 paths.concatJsDest  = paths.webroot + "js/site.min.js";
 paths.concatCssDest = paths.webroot + "css/site.min.css";
 paths.nodeRoot      = "./node_modules/";
-paths.nodeDest       = paths.webroot + "lib/";
+paths.nodeDest      = paths.webroot + "lib/";
 
 // Clean tasks
 gulp.task("clean:js", done => rimraf(paths.concatJsDest, done));
@@ -84,6 +84,12 @@ gulp.task("lib:fontawesome-free", function () {
     return gulp.src(paths.nodeRoot + "@fortawesome/fontawesome-free/webfonts/*")
         .pipe(gulp.dest(paths.nodeDest + "fontawesome-free/webfonts"));
 });
+// Copy jQuery Unobtrusive Validation distribution files to wwwroot
+gulp.task("lib:bootswatch", function () {
+    return gulp.src(paths.nodeRoot + "bootswatch/dist/*/*")
+        .pipe(gulp.dest(paths.nodeDest + "bootswatch/dist"));
+});
+
 // Client-side library tasks
 gulp.task("lib", gulp.series(
     [
@@ -91,7 +97,8 @@ gulp.task("lib", gulp.series(
         "lib:jquery",
         "lib:jquery-validation",
         "lib:jquery-validation-unobtrusive",
-        "lib:fontawesome-free"
+        "lib:fontawesome-free",
+        "lib:bootswatch"
     ]
 ));
 

@@ -1,0 +1,21 @@
+{
+  "version": "1.0.0",
+  "name": "asp.net",
+  "private": true,
+  "dependencies": {
+    "bootstrap": "4.3.1",
+    "@fortawesome/fontawesome-free": "5.7.2",
+    "jquery": "3.3.1",
+    "jquery-validation": "1.19.0",
+    "jquery-validation-unobtrusive": "3.2.11",
+    "bootswatch": "4.3.1",
+    "tinymce": "5.0.3"
+  },
+  "devDependencies": {
+    "gulp": "4.0.0",
+    "gulp-concat": "2.6.1",
+    "gulp-cssmin": "0.2.0",
+    "gulp-uglify": "3.0.2",
+    "rimraf": "2.6.3"
+  }
+}
