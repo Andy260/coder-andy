@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace CoderAndy.Migrations
+namespace CoderAndy.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -14,22 +14,24 @@ namespace CoderAndy.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.3-servicing-35854");
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
 
             modelBuilder.Entity("CoderAndy.Models.Blog.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("LinkName")
-                        .IsRequired();
-
                     b.Property<string>("Name")
                         .IsRequired();
 
                     b.Property<int?>("ParentId");
 
+                    b.Property<string>("PermaLink")
+                        .IsRequired();
+
                     b.HasKey("Id");
+
+                    b.HasAlternateKey("PermaLink");
 
                     b.HasIndex("ParentId");
 
@@ -39,8 +41,8 @@ namespace CoderAndy.Migrations
                         new
                         {
                             Id = 1,
-                            LinkName = "uncategorised",
-                            Name = "Uncategorised"
+                            Name = "Uncategorised",
+                            PermaLink = "uncategorised"
                         });
                 });
 
@@ -60,7 +62,7 @@ namespace CoderAndy.Migrations
 
                     b.Property<DateTime>("LastModificationTime");
 
-                    b.Property<string>("Link")
+                    b.Property<string>("PermaLink")
                         .IsRequired();
 
                     b.Property<DateTime>("PublishTime");

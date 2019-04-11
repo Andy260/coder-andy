@@ -169,7 +169,7 @@ namespace CoderAndy.Models.Blog.Tests
                 {
                     Assert.AreEqual(id, post.Id);
                     Assert.AreEqual(title, post.Title);
-                    Assert.AreEqual(link, post.Link);
+                    Assert.AreEqual(link, post.PermaLink);
                     Assert.AreEqual(DateTime.Today, post.CreationTime);
                     Assert.AreEqual(DateTime.Today, post.LastModificationTime);
                     Assert.AreEqual(publishTime, post.PublishTime);
@@ -199,7 +199,7 @@ namespace CoderAndy.Models.Blog.Tests
                 {
                     Assert.AreEqual(id, post.Id);
                     Assert.AreEqual(title, post.Title);
-                    Assert.AreEqual("test-post", post.Link);
+                    Assert.AreEqual("test-post", post.PermaLink);
                     Assert.AreEqual(DateTime.Today, post.CreationTime);
                     Assert.AreEqual(DateTime.Today, post.LastModificationTime);
                     Assert.AreEqual(DateTime.Today, post.PublishTime);
@@ -228,7 +228,7 @@ namespace CoderAndy.Models.Blog.Tests
                 {
                     Assert.AreEqual(id, post.Id);
                     Assert.AreEqual(title, post.Title);
-                    Assert.AreEqual("another-test-post", post.Link);
+                    Assert.AreEqual("another-test-post", post.PermaLink);
                     Assert.AreEqual(DateTime.Today, post.CreationTime);
                     Assert.AreEqual(DateTime.Today, post.LastModificationTime);
                     Assert.AreEqual(DateTime.Today, post.PublishTime);
@@ -255,7 +255,7 @@ namespace CoderAndy.Models.Blog.Tests
                 {
                     Assert.AreEqual(id, post.Id);
                     Assert.IsTrue(string.IsNullOrEmpty(post.Title));
-                    Assert.AreEqual("_", post.Link);
+                    Assert.AreEqual("_", post.PermaLink);
                     Assert.AreEqual(DateTime.Today, post.CreationTime);
                     Assert.AreEqual(DateTime.Today, post.LastModificationTime);
                     Assert.AreEqual(DateTime.Today, post.PublishTime);
@@ -823,7 +823,7 @@ namespace CoderAndy.Models.Blog.Tests
             HashCode hashGenerator = new HashCode();
             hashGenerator.Add(post.Id);
             hashGenerator.Add(post.Title);
-            hashGenerator.Add(post.Link);
+            hashGenerator.Add(post.PermaLink);
             hashGenerator.Add(post.CreationTime);
             hashGenerator.Add(post.PublishTime);
             hashGenerator.Add(post.LastModificationTime);

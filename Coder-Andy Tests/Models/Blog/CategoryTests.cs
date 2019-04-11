@@ -93,7 +93,7 @@ namespace CoderAndy.Models.Blog.Tests
             // Ensure created category object has expected object
             Assert.AreEqual(id, category.Id);
             Assert.AreEqual(name, category.Name);
-            Assert.AreEqual(link, category.LinkName);
+            Assert.AreEqual(link, category.PermaLink);
             Assert.AreEqual(null, category.Parent);
         }
 
@@ -112,7 +112,7 @@ namespace CoderAndy.Models.Blog.Tests
             // Ensure created category object has expected object
             Assert.AreEqual(id, category.Id);
             Assert.AreEqual(name, category.Name);
-            Assert.AreEqual("_", category.LinkName);
+            Assert.AreEqual("_", category.PermaLink);
             Assert.AreEqual(null, category.Parent);
         }
 
@@ -132,7 +132,7 @@ namespace CoderAndy.Models.Blog.Tests
             // Ensure created category object has expected object
             Assert.AreEqual(id, category.Id);
             Assert.AreEqual(name, category.Name);
-            Assert.AreEqual(link, category.LinkName);
+            Assert.AreEqual(link, category.PermaLink);
             Assert.AreEqual(parent, category.Parent);
         }
 
@@ -150,7 +150,7 @@ namespace CoderAndy.Models.Blog.Tests
             // Ensure created category object has expected object
             Assert.AreEqual(id, category.Id);
             Assert.AreEqual(name, category.Name);
-            Assert.AreEqual("test-partial-category", category.LinkName);
+            Assert.AreEqual("test-partial-category", category.PermaLink);
             Assert.AreEqual(null, category.Parent);
         }
 
@@ -168,7 +168,7 @@ namespace CoderAndy.Models.Blog.Tests
             // Ensure created category object has expected object
             Assert.AreEqual(id, category.Id);
             Assert.AreEqual(a_name, category.Name);
-            Assert.AreEqual("_", category.LinkName);
+            Assert.AreEqual("_", category.PermaLink);
             Assert.AreEqual(null, category.Parent);
         }
 
@@ -187,7 +187,7 @@ namespace CoderAndy.Models.Blog.Tests
             // Ensure created category object has expected object
             Assert.AreEqual(id, category.Id);
             Assert.AreEqual(name, category.Name);
-            Assert.AreEqual("test-partial-category", category.LinkName);
+            Assert.AreEqual("test-partial-category", category.PermaLink);
             Assert.AreEqual(parent, category.Parent);
         }
 
@@ -476,7 +476,7 @@ namespace CoderAndy.Models.Blog.Tests
                 {
                     Assert.AreEqual(1, uncategorised.Id);
                     Assert.IsTrue(string.Equals("Uncategorised", uncategorised.Name, StringComparison.Ordinal));
-                    Assert.IsTrue(string.Equals("uncategorised", uncategorised.LinkName, StringComparison.Ordinal));
+                    Assert.IsTrue(string.Equals("uncategorised", uncategorised.PermaLink, StringComparison.Ordinal));
                     Assert.IsNull(uncategorised.Parent);
                 });
             }
@@ -665,7 +665,7 @@ namespace CoderAndy.Models.Blog.Tests
             HashCode hashGenerator = new HashCode();
             hashGenerator.Add(category.Id);
             hashGenerator.Add(category.Name);
-            hashGenerator.Add(category.LinkName);
+            hashGenerator.Add(category.PermaLink);
             hashGenerator.Add(category.Parent);
 
             return hashGenerator.ToHashCode();

@@ -6,17 +6,78 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace CoderAndy.Migrations
+namespace CoderAndy.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20190303080533_CreateIdentitySchema")]
-    partial class CreateIdentitySchema
+    [Migration("20190411133857_CreateBlog")]
+    partial class CreateBlog
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.2.0-rtm-35687");
+                .HasAnnotation("ProductVersion", "2.2.4-servicing-10062");
+
+            modelBuilder.Entity("CoderAndy.Models.Blog.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Name")
+                        .IsRequired();
+
+                    b.Property<int?>("ParentId");
+
+                    b.Property<string>("PermaLink")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasAlternateKey("PermaLink");
+
+                    b.HasIndex("ParentId");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            Name = "Uncategorised",
+                            PermaLink = "uncategorised"
+                        });
+                });
+
+            modelBuilder.Entity("CoderAndy.Models.Blog.Post", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<int>("CategoryId");
+
+                    b.Property<string>("Content");
+
+                    b.Property<DateTime>("CreationTime");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(280);
+
+                    b.Property<DateTime>("LastModificationTime");
+
+                    b.Property<string>("PermaLink")
+                        .IsRequired();
+
+                    b.Property<DateTime>("PublishTime");
+
+                    b.Property<string>("Title")
+                        .IsRequired();
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.ToTable("Posts");
+                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -182,6 +243,21 @@ namespace CoderAndy.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("AspNetUserTokens");
+                });
+
+            modelBuilder.Entity("CoderAndy.Models.Blog.Category", b =>
+                {
+                    b.HasOne("CoderAndy.Models.Blog.Category", "Parent")
+                        .WithMany()
+                        .HasForeignKey("ParentId");
+                });
+
+            modelBuilder.Entity("CoderAndy.Models.Blog.Post", b =>
+                {
+                    b.HasOne("CoderAndy.Models.Blog.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>

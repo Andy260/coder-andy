@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using CoderAndy.Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace CoderAndy.Models.Blog
 {
@@ -27,7 +28,7 @@ namespace CoderAndy.Models.Blog
         /// </summary>
         [Required]
         [MinLength(1)]
-        public string Link { get; set; }
+        public string PermaLink { get; set; }
 
         /// <summary>
         /// Date and time this post was created
@@ -107,7 +108,7 @@ namespace CoderAndy.Models.Blog
             // Return equality using all properties
             return Id == other.Id &&
                 string.Equals(Title, other.Title, StringComparison.Ordinal) &&
-                string.Equals(Link, other.Link, StringComparison.Ordinal) &&
+                string.Equals(PermaLink, other.PermaLink, StringComparison.Ordinal) &&
                 CreationTime == other.CreationTime &&
                 PublishTime == other.PublishTime &&
                 LastModificationTime == other.LastModificationTime &&
@@ -127,7 +128,7 @@ namespace CoderAndy.Models.Blog
             HashCode hashGenerator = new HashCode();
             hashGenerator.Add(Id);
             hashGenerator.Add(Title);
-            hashGenerator.Add(Link);
+            hashGenerator.Add(PermaLink);
             hashGenerator.Add(CreationTime);
             hashGenerator.Add(PublishTime);
             hashGenerator.Add(LastModificationTime);
@@ -145,6 +146,16 @@ namespace CoderAndy.Models.Blog
         public override string ToString()
         {
             return Title;
+        }
+
+        /// <summary>
+        /// Creates the schema required for the blog Post model
+        /// </summary>
+        /// <param name="builder">The builder being used to construct the model</param>
+        public static void BuildModel(ModelBuilder builder)
+        {
+            // Set alternate key
+            builder.Entity<Post>().HasAlternateKey(c => c.PermaLink);
         }
 
         #endregion
@@ -251,7 +262,7 @@ namespace CoderAndy.Models.Blog
         {
             Id                      = id;
             Title                   = title;
-            Link                    = link;
+            PermaLink                    = link;
             PublishTime             = publishTime;
             LastModificationTime    = DateTime.Today;
             CreationTime            = DateTime.Today;

@@ -28,7 +28,7 @@ namespace CoderAndy.Models.Blog
         /// URL link of blog category in the format of: {domain}/blog/{parent-category-link/{category-link}/{post-link}
         /// </summary>
         [Required]
-        public string LinkName { get; set; }
+        public string PermaLink { get; set; }
 
         /// <summary>
         /// Parent category for this category (NULL if top-level category)
@@ -47,21 +47,10 @@ namespace CoderAndy.Models.Blog
         public static Category Uncategorised(ApplicationDbContext dbContext)
         {
             IQueryable<Category> uncategorised = from category in dbContext.Categories
-                                                 where string.Equals("uncategorised", category.LinkName)
+                                                 where string.Equals("uncategorised", category.PermaLink)
                                                  select category;
 
             return uncategorised.First();
-        }
-
-        /// <summary>
-        /// Creates the schema required for the blog Category model
-        /// </summary>
-        /// <param name="builder">The builder being used to construct the model</param>
-        public static void BuildModel(ModelBuilder builder)
-        {
-            // Set data with uncategorised category
-            Category uncategorised = new Category("Uncategorised", "uncategorised", null, 1);
-            builder.Entity<Category>().HasData(uncategorised);
         }
 
         /// <summary>
@@ -98,7 +87,7 @@ namespace CoderAndy.Models.Blog
             // Return equality using all properties
             return Id == other.Id &&
                 string.Equals(Name, other.Name, StringComparison.Ordinal) &&
-                string.Equals(LinkName, other.LinkName, StringComparison.Ordinal) &&
+                string.Equals(PermaLink, other.PermaLink, StringComparison.Ordinal) &&
                 Parent == other.Parent;
 
 #pragma warning restore IDE0041 // Re-enable 'is null' check for remaining code
@@ -113,7 +102,7 @@ namespace CoderAndy.Models.Blog
             HashCode hashGenerator = new HashCode();
             hashGenerator.Add(Id);
             hashGenerator.Add(Name);
-            hashGenerator.Add(LinkName);
+            hashGenerator.Add(PermaLink);
             hashGenerator.Add(Parent);
 
             return hashGenerator.ToHashCode();
@@ -126,6 +115,20 @@ namespace CoderAndy.Models.Blog
         public override string ToString()
         {
             return Name;
+        }
+
+        /// <summary>
+        /// Creates the schema required for the blog Category model
+        /// </summary>
+        /// <param name="builder">The builder being used to construct the model</param>
+        public static void BuildModel(ModelBuilder builder)
+        {
+            // Set alternate key
+            builder.Entity<Category>().HasAlternateKey(c => c.PermaLink);
+
+            // Set data with uncategorised category
+            Category uncategorised = new Category("Uncategorised", "uncategorised", null, 1);
+            builder.Entity<Category>().HasData(uncategorised);
         }
 
         #endregion
@@ -189,7 +192,7 @@ namespace CoderAndy.Models.Blog
         {
             Id          = id;
             Name        = name;
-            LinkName    = BlogHelper.NameToLinkName(linkName);
+            PermaLink    = BlogHelper.NameToLinkName(linkName);
             Parent      = parent;
         }
 
