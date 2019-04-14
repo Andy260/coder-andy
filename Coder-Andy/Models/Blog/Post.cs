@@ -1,6 +1,5 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
-using CoderAndy.Data;
 using Microsoft.EntityFrameworkCore;
 
 namespace CoderAndy.Models.Blog
@@ -48,6 +47,10 @@ namespace CoderAndy.Models.Blog
         /// </summary>
         [Required]
         public Category Category { get; set; }
+        /// <summary>
+        /// ID of the category this post is associated with
+        /// </summary>
+        public int CategoryId { get; set; }
 
         /// <summary>
         /// Content of this post
@@ -213,8 +216,8 @@ namespace CoderAndy.Models.Blog
         /// </summary>
         /// <param name="context">Database context to use when creating this post</param>
         /// <param name="id">Database ID of this post</param>
-        public Post(ApplicationDbContext context, int id = 0)
-            : this(context, null, null, id)
+        public Post(int id = 0)
+            : this(null, null, id)
         {
 
         }
@@ -226,8 +229,8 @@ namespace CoderAndy.Models.Blog
         /// <param name="title">Title of the blog post</param>
         /// <param name="content">HTML encoded content of this post</param>
         /// <param name="id">Database ID of this post</param>
-        public Post(ApplicationDbContext context, string title, string content, int id = 0)
-            : this(context, title, Category.Uncategorised(context), content, id)
+        public Post(string title, string content, int id = 0)
+            : this(title, null, content, id)
         {
 
         }
@@ -240,8 +243,8 @@ namespace CoderAndy.Models.Blog
         /// <param name="category">Category to associate this post with</param>
         /// <param name="content">HTML encoded content of this post</param>
         /// <param name="id">Database ID of this post</param>
-        public Post(ApplicationDbContext context, string title, Category category, string content, int id = 0)
-            : this(context, title, BlogHelper.NameToLinkName(title), DateTime.Today, category, content, null, id)
+        public Post(string title, Category category, string content, int id = 0)
+            : this(title, BlogHelper.NameToLinkName(title), DateTime.Today, category, content, null, id)
         {
 
         }
@@ -258,15 +261,16 @@ namespace CoderAndy.Models.Blog
         /// <param name="description">Description of the post, displayed on links to this post</param>
         /// <param name="thumbnail">Thumbnail for this post for links to this post</param>
         /// /// <param name="id">Database ID of this post</param>
-        public Post(ApplicationDbContext context, string title, string link, DateTime publishTime, Category category, string content, string description, int id = 0)
+        public Post(string title, string link, DateTime publishTime, Category category, string content, string description, int id = 0)
         {
             Id                      = id;
             Title                   = title;
-            PermaLink                    = link;
+            PermaLink               = BlogHelper.NameToLinkName(link);
             PublishTime             = publishTime;
             LastModificationTime    = DateTime.Today;
             CreationTime            = DateTime.Today;
-            Category                = category ?? Category.Uncategorised(context);
+            Category                = category;
+            CategoryId              = 1;
             Content                 = content;
             Description             = description;
         }
